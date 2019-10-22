@@ -14,7 +14,7 @@ import com.libinbin.validation.config.IValidRuleConfig;
  * 修改序号，修改日期，修改人，修改内容
  */
 public interface IValidFactory {
-    IValidFactory SINGLETON_FACTORY = SingletonValidFactory.FACTORY;
+ //   IValidFactory SINGLETON_FACTORY = SingletonValidFactory.FACTORY;
 
     IValidRule buildRule(IValidRuleConfig var1);
 

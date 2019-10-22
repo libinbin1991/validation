@@ -1,8 +1,11 @@
 package com.libinbin.validation.utils;
 
+import com.libinbin.validation.config.IValidRuleConfigPlus;
 import com.libinbin.validation.config.ValidConfig;
 import com.libinbin.validation.field.ValidField;
 import com.libinbin.validation.model.IResult;
+import com.libinbin.validation.rule.SingletonValidFactory;
+import com.libinbin.validation.rule.StringIsEmailValidRuleImpl;
 
 /**
  * <p>Title: </p>
@@ -18,13 +21,14 @@ import com.libinbin.validation.model.IResult;
 public class Test {
 
     public static void main(String[] args) {
-        IResult<String> validResult = ValidUtil.valid(
-                new ValidField("123456", "收款方账户名称", ValidConfig.OBJ_NOT_NULL),
-                new ValidField("123435", "收款方账户名称", ValidConfig.OBJ_NOT_NULL),
-                new ValidField("", "收款方分支行名称", ValidConfig.OBJ_NOT_NULL)
-        );
+
+        SingletonValidFactory instance = SingletonValidFactory.getInstance();
+        instance.registRule(IValidRuleConfigPlus.STRING_IS_EMAIL.ruleName(), new StringIsEmailValidRuleImpl());
+        IResult<String> validResult = ValidUtil.valid(new ValidField("131123@123", "邮箱", IValidRuleConfigPlus.STRING_IS_EMAIL),
+                new ValidField("", "收款方分支行名称", ValidConfig.OBJ_NOT_NULL));
         String message = validResult.getMessage();
         System.out.println(message);
+
 
     }
 }

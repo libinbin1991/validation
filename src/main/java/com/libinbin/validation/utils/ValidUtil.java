@@ -6,6 +6,7 @@ import com.libinbin.validation.model.IResult;
 import com.libinbin.validation.model.impl.ResultFactory;
 import com.libinbin.validation.rule.IValidFactory;
 import com.libinbin.validation.rule.IValidRule;
+import com.libinbin.validation.rule.SingletonValidFactory;
 
 /**
  * <p>Title: </p>
@@ -20,44 +21,37 @@ import com.libinbin.validation.rule.IValidRule;
 public class ValidUtil {
 
     private static final String SUCCESS = "校验通过";
-    private static final IValidFactory FACTORY;
-
-    static {
-        FACTORY = IValidFactory.SINGLETON_FACTORY;
-    }
 
     public ValidUtil() {
     }
 
     private static final String valid(Object toValid, IValidRuleConfig... ruleConfigList) {
         assert ruleConfigList != null;
+        SingletonValidFactory factory = SingletonValidFactory.getInstance();
 
-        for(int configIndex = 0; configIndex < ruleConfigList.length; ++configIndex) {
+        for (int configIndex = 0; configIndex < ruleConfigList.length; ++configIndex) {
             IValidRuleConfig config = ruleConfigList[configIndex];
-            IValidRule rule = FACTORY.buildRule(config);
-
+            IValidRule rule = factory.buildRule(config);
             assert rule != null;
-
             if (!rule.valid(toValid, config)) {
                 return rule.errorMsg(config);
             }
         }
 
-        return "校验通过";
+        return SUCCESS;
     }
 
     public static final IResult<String> valid(IValidField... fields) {
         assert fields != null;
         IResult<String> result = ResultFactory.INIT();
-        result.success("校验通过");
         String fieldResult = null;
         IValidField[] var6 = fields;
         int var5 = fields.length;
 
-        for(int var4 = 0; var4 < var5; ++var4) {
+        for (int var4 = 0; var4 < var5; ++var4) {
             IValidField field = var6[var4];
             fieldResult = valid(field.value(), field.configs());
-            if (!"校验通过".equals(fieldResult)) {
+            if (!SUCCESS.equals(fieldResult)) {
                 result.fail(field.name() + fieldResult);
                 break;
             }

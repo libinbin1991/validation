@@ -17,18 +17,29 @@ import java.util.Map;
  * 修改记录：
  * 修改序号，修改日期，修改人，修改内容
  */
-public class SingletonValidFactory implements IValidFactory{
+public class SingletonValidFactory {
     private static final Map<String, IValidRule> ruleMap = new Hashtable();
-    static final SingletonValidFactory FACTORY = new SingletonValidFactory();
+    private volatile static SingletonValidFactory FACTORY = null;
 
     private SingletonValidFactory() {
         ruleMap.put(ValidConfig.OBJ_NOT_NULL.ruleName(), new StringNotBlankValidRuleImpl());
     }
 
+    public static SingletonValidFactory getInstance() {
+        if (FACTORY == null) {      //双重检测机制
+            synchronized (SingletonValidFactory.class) {  //同步锁
+                if (FACTORY == null) {     //双重检测机制
+                    FACTORY = new SingletonValidFactory();
+                }
+            }
+        }
+        return FACTORY;
+    }
+
     public IValidRule buildRule(IValidRuleConfig config) {
         assert config != null;
 
-        IValidRule rule = (IValidRule)ruleMap.get(config.ruleName());
+        IValidRule rule = (IValidRule) ruleMap.get(config.ruleName());
 
         assert rule != null;
 
